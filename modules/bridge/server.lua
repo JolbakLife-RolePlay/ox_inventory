@@ -29,10 +29,10 @@ function server.setPlayerData(player)
 end
 
 if shared.framework == 'esx' then
-	local ESX = exports['es_extended']:getSharedObject()
+	local ESX = exports['JLRP-Framework']:GetFrameworkObjects()
 
 	if ESX.CreatePickup then
-		error('ox_inventory requires a ESX Legacy v1.6.0 or above, refer to the documentation.')
+		error('this version of ox_inventory requires JLRP-Framework')
 	end
 
 	ESX = {

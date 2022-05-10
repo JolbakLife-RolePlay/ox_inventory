@@ -41,7 +41,7 @@ end
 if shared.framework == 'ox' then
 	RegisterNetEvent('ox:playerLogout', onLogout)
 elseif shared.framework == 'esx' then
-	local ESX = exports.es_extended:getSharedObject()
+	local ESX = exports['JLRP-Framework']:GetFrameworkObjects()
 
 	ESX = {
 		SetPlayerData = ESX.SetPlayerData,
@@ -53,10 +53,10 @@ elseif shared.framework == 'esx' then
 		ESX.SetPlayerData(key, value)
 	end
 
-	RegisterNetEvent('esx:onPlayerLogout', onLogout)
+	RegisterNetEvent('JLRP-Framework:onPlayerLogout', onLogout)
 
-	AddEventHandler('esx:setPlayerData', function(key, value)
-		if PlayerData.loaded and GetInvokingResource() == 'es_extended' then
+	AddEventHandler('JLRP-Framework:setPlayerData', function(key, value)
+		if PlayerData.loaded and GetInvokingResource() == 'JLRP-Framework' then
 			if key == 'job' then
 				key = 'groups'
 				value = { [value.name] = value.grade }
