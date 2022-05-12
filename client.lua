@@ -681,7 +681,7 @@ local function updateInventory(items, weight)
 			data.count += count
 
 			if shared.framework == 'esx' then
-				TriggerEvent('esx:removeInventoryItem', data.name, data.count)
+				TriggerEvent('JLRP-Framework:removeInventoryItem', data.name, data.count)
 			else
 				TriggerEvent('ox_inventory:itemCount', data.name, data.count)
 			end
@@ -693,7 +693,7 @@ local function updateInventory(items, weight)
 			data.count += count
 
 			if shared.framework == 'esx' then
-				TriggerEvent('esx:addInventoryItem', data.name, data.count)
+				TriggerEvent('JLRP-Framework:addInventoryItem', data.name, data.count)
 			else
 				TriggerEvent('ox_inventory:itemCount', data.name, data.count)
 			end

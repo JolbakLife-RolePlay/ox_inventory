@@ -1199,9 +1199,9 @@ local function playerDropped(source)
 end
 
 if shared.framework == 'esx' then
-	AddEventHandler('esx:playerDropped', playerDropped)
+	AddEventHandler('JLRP-Framework:playerDropped', playerDropped)
 
-	AddEventHandler('esx:setJob', function(source, job)
+	AddEventHandler('JLRP-Framework:setJob', function(source, job)
 		local inventory = Inventories[source]
 		if inventory then
 			inventory.player.groups[job.name] = job.grade
