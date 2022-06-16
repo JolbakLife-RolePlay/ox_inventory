@@ -12,12 +12,16 @@ RegisterNetEvent('ox_inventory:clearWeapons', function()
 end)
 
 local StashTarget
+
 exports('setStashTarget', function(id, owner)
 	StashTarget = id and {id=id, owner=owner}
 end)
 
 local invBusy = true
 local invOpen = false
+local plyState = LocalPlayer.state
+
+plyState:set('invBusy', true, false)
 
 local function canOpenInventory()
 	return PlayerData.loaded
@@ -51,8 +55,6 @@ local function closeTrunk()
 		end)
 	end
 end
-
-local plyState = LocalPlayer.state
 
 ---@param inv string inventory type
 ---@param data table id and owner
@@ -244,8 +246,8 @@ local function useSlot(slot)
 
 			if data.export then
 				return data.export(data, {name = item.name, slot = item.slot, metadata = item.metadata})
-			elseif data.client.event then -- deprecated, to be removed
-				return error(('unable to trigger event for %s, data.client.event has been removed. utilise exports instead.'):format(item.name))
+			elseif data.client.event then -- re-add it, so I don't need to deal with morons taking screenshots of errors when using trigger event
+				return TriggerEvent(data.client.event, data, {name = item.name, slot = item.slot, metadata = item.metadata})
 			end
 		end
 
@@ -933,9 +935,6 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 	Inventory.Stashes()
 	Inventory.Evidence()
 	registerCommands()
-
-	plyState:set('invBusy', false, false)
-	plyState:set('invOpen', false, false)
 	TriggerEvent('ox_inventory:updateInventory', PlayerData.inventory)
 	lib.notify({ description = shared.locale('inventory_setup') })
 	Utils.WeaponWheel(false)
@@ -1101,6 +1100,8 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 		end
 	end, 0, lib.disableControls)
 
+	plyState:set('invBusy', false, false)
+	plyState:set('invOpen', false, false)
 	collectgarbage('collect')
 end)
 
