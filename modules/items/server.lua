@@ -56,11 +56,15 @@ setmetatable(Items, {
 	end
 })
 
-CreateThread(function()
-	if shared.framework == 'esx' then
-		local items = MySQL.query.await('SELECT * FROM items')
+local Inventory
 
-		if items and #items > 0 then
+CreateThread(function()
+	Inventory = server.inventory
+
+	if shared.framework == 'esx' then
+		local success, items = pcall(MySQL.query.await, 'SELECT * FROM items')
+
+		if success and #items > 0 then
 			local dump = {}
 			local count = 0
 
@@ -106,67 +110,37 @@ CreateThread(function()
 				file[fileSize+1] = '}'
 
 				SaveResourceFile(shared.resource, 'data/items.lua', table.concat(file), -1)
-				shared.info(count, 'items have been copied from the database')
+				shared.info(count, 'items have been copied from the database.')
+				shared.info('You should restart the resource to load the new items.')
 			end
 
-			shared.warning('Database contains', #items, 'items.')
-			shared.warning('These items should be removed, and any queries for items should instead reference ESX.Items')
-			shared.warning('These entries are no longer removed to satisfy the creators of obfuscated and encrypted resources.')
-			shared.warning('Note: Any items that exist in item data and not the database will not work in said resources.')
-			shared.warning('Apparently indexing ESX.Items is too big brain, or something.')
+			shared.info('Database contains', #items, 'items.')
+			shared.warning('Any resources that rely on the database for item data is incompatible with this resource.')
+			shared.warning('Utilise \'exports.ox_inventory:Items()\', or lazy-load ESX and use ESX.Items instead.')
 		end
 	end
 
-	if server.clearstashes then MySQL.query('DELETE FROM ox_inventory WHERE lastupdated < (NOW() - INTERVAL '..server.clearstashes..') OR data = "[]"') end
+	local clearStashes = GetConvar('inventory:clearstashes', '6 MONTH')
+
+	if clearStashes ~= '' then
+		MySQL.query(('DELETE FROM ox_inventory WHERE lastupdated < (NOW() - INTERVAL %s) OR data = "[]"'):format(clearStashes))
+	end
 
 	local count = 0
-	Wait(2000)
-	if server.UsableItemsCallbacks then
-		server.UsableItemsCallbacks = server.UsableItemsCallbacks()
-	else server.UsableItemsCallbacks = {} end
+
+	Wait(1500)
 
 	for _, item in pairs(ItemList) do
-		if item.consume and item.consume > 0 and server.UsableItemsCallbacks[item.name] then server.UsableItemsCallbacks[item.name] = nil end
+		if item.consume and item.consume > 0 and server.UsableItemsCallbacks and server.UsableItemsCallbacks[item.name] then
+			server.UsableItemsCallbacks[item.name] = nil
+		end
+
 		count += 1
 	end
 
 	shared.info('Inventory has loaded '..count..' items')
 	collectgarbage('collect') -- clean up from initialisation
 	shared.ready = true
-
-	--[[local ignore = {[0] = '?', [`WEAPON_UNARMED`] = 'unarmed', [966099553] = 'shovel'}
-	while true do
-		Wait(45000)
-		local Players = ESX.GetPlayers()
-		for i = 1, #Players do
-			local i = Players[i]
-			--if not IsPlayerAceAllowed(i, 'command.refresh') then
-				local inv, ped = Inventory(i), GetPlayerPed(i)
-				local hash, curWeapon = GetSelectedPedWeapon(ped)
-				if not ignore[hash] then
-					curWeapon = Utils.GetWeapon(hash)
-					if curWeapon then
-						local count = 0
-						for k, v in pairs(inv.items) do
-							if v.name == curWeapon.name then
-								count = 1 break
-							end
-						end
-						if count == 0 then
-							-- does not own weapon; player may be cheating
-							shared.warning(inv.name, 'is using an invalid weapon (', curWeapon.name, ')')
-							--DropPlayer(i)
-						end
-					else
-						-- weapon doesn't exist; player may be cheating
-						shared.warning(inv.name, 'is using an unknown weapon (', hash, ')')
-						--DropPlayer(i)
-					end
-				end
-			--end
-			Wait(200)
-		end
-	end]]
 end)
 
 local function GenerateText(num)
@@ -186,9 +160,6 @@ local function GenerateSerial(text)
 	return ('%s%s%s'):format(math.random(100000,999999), text == nil and GenerateText(3) or text, math.random(100000,999999))
 end
 
-local Inventory
-CreateThread(function() Inventory = server.inventory end)
-
 function Items.Metadata(inv, item, metadata, count)
 	if type(inv) ~= 'table' then inv = Inventory(inv) end
 	if not item.weapon then metadata = not metadata and {} or type(metadata) == 'string' and {type=metadata} or metadata end
@@ -200,8 +171,18 @@ function Items.Metadata(inv, item, metadata, count)
 		if not metadata.components then metadata.components = {} end
 
 		if metadata.registered ~= false and (metadata.ammo or item.name == 'WEAPON_STUNGUN') then
-			metadata.registered = type(metadata.registered) == 'string' and metadata.registered or inv.player.name
-			metadata.serial = GenerateSerial(metadata.serial)
+			local registered = type(metadata.registered) == 'string' and metadata.registered or inv?.player?.name
+
+			if registered then
+				metadata.registered = registered
+				metadata.serial = GenerateSerial(metadata.serial)
+			else
+				metadata.registered = nil
+			end
+		end
+
+		if item.hash == `WEAPON_PETROLCAN` or item.hash == `WEAPON_HAZARDCAN` or item.hash == `WEAPON_FIREEXTINGUISHER` then
+			metadata.ammo = metadata.durability
 		end
 	else
 		local container = Items.containers[item.name]
@@ -238,15 +219,21 @@ function Items.Metadata(inv, item, metadata, count)
 	return metadata, count
 end
 
-function Items.CheckMetadata(metadata, item, name)
+function Items.CheckMetadata(metadata, item, name, ostime)
 	if metadata.bag then
 		metadata.container = metadata.bag
 		metadata.size = ItemList.containers[name]?.size or {5, 1000}
 		metadata.bag = nil
 	end
 
-	if metadata.durability and not item.durability and not item.degrade and not item.weapon then
-		metadata.durability = nil
+	local durability = metadata.durability
+
+	if durability then
+		if not item.durability and not item.degrade and not item.weapon then
+			metadata.durability = nil
+		elseif durability > 100 and ostime >= durability then
+			metadata.durability = 0
+		end
 	end
 
 	if metadata.components then

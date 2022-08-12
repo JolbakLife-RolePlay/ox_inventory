@@ -29,21 +29,24 @@ function server.setPlayerData(player)
 end
 
 if shared.framework == 'esx' then
-	local ESX = exports['JLRP-Framework']:GetFrameworkObjects()
 
-	if ESX.CreatePickup then
-		error('this version of ox_inventory requires JLRP-Framework')
-	end
+	local ESX
+  
+	SetTimeout(1500, function()
+		ESX = exports['JLRP-Framework']:GetFrameworkObjects()
 
-	ESX = {
-		GetUsableItems = ESX.GetUsableItems,
-		GetPlayerFromId = ESX.GetPlayerFromId,
-		UseItem = ESX.UseItem
-	}
+		if ESX.CreatePickup then
+			error('this version of ox_inventory requires JLRP-Framework')
+		end
 
-	server.UseItem = ESX.UseItem
-	server.UsableItemsCallbacks = ESX.GetUsableItems
-	server.GetPlayerFromId = ESX.GetPlayerFromId
+		server.UseItem = ESX.UseItem
+		server.GetPlayerFromId = ESX.GetPlayerFromId
+		server.UsableItemsCallbacks = ESX.GetUsableItems()
+
+		for i, xPlayer, #ESX.GetPlayers() do
+			exports.ox_inventory:setPlayerInventory(xPlayer, xPlayer?.getInventory())
+		end
+	end)
 
 	-- Accounts that need to be synced with physical items
 	server.accounts = {
@@ -52,25 +55,17 @@ if shared.framework == 'esx' then
 	}
 
 	function server.setPlayerData(player)
+    local job = player.getJob()
 		local groups = {
-			[player.job.name] = player.job.grade
+			[job.name] = job.grade
 		}
 
 		return {
 			source = player.source,
-			name = player.name,
+			name = player.getName(),
 			groups = groups,
-			sex = player.sex or player.variables.sex,
-			dateofbirth = player.dateofbirth or player.variables.dateofbirth,
+			sex = player.get('sex'),
+			dateofbirth = player.get('dateofbirth'),
 		}
 	end
-
-	RegisterServerEvent('ox_inventory:requestPlayerInventory', function()
-		local source = source
-		local player = server.GetPlayerFromId(source)
-
-		if player then
-			exports.ox_inventory:setPlayerInventory(player, player?.inventory)
-		end
-	end)
 end

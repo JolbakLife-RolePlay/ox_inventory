@@ -30,7 +30,7 @@ local function onLogout()
 			client.parachute = false
 		end
 
-		TriggerEvent('ox_inventory:closeInventory')
+		client.closeInventory()
 		PlayerData.loaded = false
 		ClearInterval(client.interval)
 		ClearInterval(client.tick)
@@ -47,12 +47,16 @@ if shared.framework == 'ox' then
 	end)
 
 elseif shared.framework == 'esx' then
-	local ESX = exports['JLRP-Framework']:GetFrameworkObjects()
 
-	ESX = {
-		SetPlayerData = ESX.SetPlayerData,
-		PlayerLoaded = ESX.PlayerLoaded
-	}
+	local ESX = table.create(0, 2)
+	setmetatable(ESX, {
+		__index = function(self, index)
+			local obj = exports['JLRP-Framework']:GetFrameworkObjects()
+			ESX.SetPlayerData = obj.SetPlayerData
+			ESX.PlayerLoaded = obj.PlayerLoaded
+			return ESX[index]
+		end
+	})
 
 	function client.setPlayerData(key, value)
 		PlayerData[key] = value
@@ -85,8 +89,4 @@ elseif shared.framework == 'esx' then
 		PlayerData.cuffed = false
 		LocalPlayer.state:set('invBusy', PlayerData.cuffed, false)
 	end)
-
-	if ESX.PlayerLoaded then
-		TriggerServerEvent('ox_inventory:requestPlayerInventory')
-	end
 end
