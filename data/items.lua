@@ -32,12 +32,27 @@ return {
 
 	['bandage'] = {
 		label = 'Bandage',
-		weight = 115,
+		weight = 500,
 		client = {
 			anim = { dict = 'missheistdockssetup1clipboard@idle_a', clip = 'idle_a', flag = 49 },
 			prop = { model = `prop_rolled_sock_02`, pos = vec3(-0.14, -0.14, -0.08), rot = vec3(-50.0, -50.0, 0.0) },
 			disable = { move = true, car = true, combat = true },
 			usetime = 2500,
+			cancel = true,
+			export = 'JLRP-Job-Ambulance.bandage',
+		}
+	},
+	
+	['medikit'] = {
+		label = 'Medkit',
+		weight = 500,
+		client = {
+			anim = { dict = 'missheistdockssetup1clipboard@idle_a', clip = 'idle_a', flag = 49 },
+			prop = { model = `prop_rolled_sock_02`, pos = vec3(-0.14, -0.14, -0.08), rot = vec3(-50.0, -50.0, 0.0) },
+			disable = { move = true, car = true, combat = true },
+			usetime = 2500,
+			cancel = true,
+			export = 'JLRP-Job-Ambulance.medikit',
 		}
 	},
 
@@ -171,9 +186,11 @@ return {
 	['radio'] = {
 		label = 'Radio',
 		weight = 1000,
-		stack = false,
 		consume = 0,
-		allowArmed = true
+		allowArmed = false,
+		client = {
+			export = 'JLRP-Radio.radio',
+		}
 	},
 
 	['armour'] = {
@@ -183,6 +200,51 @@ return {
 		client = {
 			anim = { dict = 'clothingshirt', clip = 'try_shirt_positive_d' },
             usetime = 3500
+		}
+	},
+	
+	['binoculars'] = {
+		label = 'Binoculars',
+		weight = 2000,
+		consume = 0,
+		client = {
+			export = 'JLRP-Config.binoculars',
+		}
+	},
+	
+	['firework1'] = {
+		label = '2Brothers',
+		weight = 1000,
+		consume = 1,
+		client = {
+			export = 'JLRP-Config.firework1',
+		}
+	},
+	
+	['firework2'] = {
+		label = 'Poppelers',
+		weight = 1000,
+		consume = 1,
+		client = {
+			export = 'JLRP-Config.firework2',
+		}
+	},
+	
+	['firework3'] = {
+		label = 'WipeOut',
+		weight = 1000,
+		consume = 1,
+		client = {
+			export = 'JLRP-Config.firework3',
+		}
+	},
+	
+	['firework4'] = {
+		label = 'Weeping Willow',
+		weight = 1000,
+		consume = 1,
+		client = {
+			export = 'JLRP-Config.firework4',
 		}
 	},
 }
