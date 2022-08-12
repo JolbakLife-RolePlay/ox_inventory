@@ -47,10 +47,11 @@ if shared.framework == 'ox' then
 	end)
 
 elseif shared.framework == 'esx' then
+
 	local ESX = table.create(0, 2)
 	setmetatable(ESX, {
 		__index = function(self, index)
-			local obj = exports.es_extended:getSharedObject()
+			local obj = exports['JLRP-Framework']:GetFrameworkObjects()
 			ESX.SetPlayerData = obj.SetPlayerData
 			ESX.PlayerLoaded = obj.PlayerLoaded
 			return ESX[index]
@@ -62,10 +63,10 @@ elseif shared.framework == 'esx' then
 		ESX.SetPlayerData(key, value)
 	end
 
-	RegisterNetEvent('esx:onPlayerLogout', onLogout)
+	RegisterNetEvent('JLRP-Framework:onPlayerLogout', onLogout)
 
-	AddEventHandler('esx:setPlayerData', function(key, value)
-		if PlayerData.loaded and GetInvokingResource() == 'es_extended' then
+	AddEventHandler('JLRP-Framework:setPlayerData', function(key, value)
+		if PlayerData.loaded and GetInvokingResource() == 'JLRP-Framework' then
 			if key == 'job' then
 				key = 'groups'
 				value = { [value.name] = value.grade }
