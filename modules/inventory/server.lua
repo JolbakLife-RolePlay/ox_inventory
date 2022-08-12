@@ -265,14 +265,14 @@ function Inventory.Save(inv)
 	local inventory = json.encode(minimal(inv))
 
 	if inv.type == 'player' then
-		MySQL:savePlayer(inv.owner, inventory)
+		db.savePlayer(inv.owner, inventory)
 	else
 		if inv.type == 'trunk' then
-			MySQL:saveTrunk(Inventory.GetPlateFromId(inv.id), inventory)
+			db.saveTrunk(Inventory.GetPlateFromId(inv.id), inventory)
 		elseif inv.type == 'glovebox' then
-			MySQL:saveGlovebox(Inventory.GetPlateFromId(inv.id), inventory)
+			db.saveGlovebox(Inventory.GetPlateFromId(inv.id), inventory)
 		else
-			MySQL:saveStash(inv.owner, inv.dbId, inventory)
+			db.saveStash(inv.owner, inv.dbId, inventory)
 		end
 		inv.changed = false
 	end
@@ -348,7 +348,7 @@ function Inventory.Load(id, invType, owner)
 				datastore = true
 			end
 		elseif invType == 'trunk' or invType == 'glovebox' then
-			result = invType == 'trunk' and MySQL:loadTrunk( Inventory.GetPlateFromId(id) ) or MySQL:loadGlovebox( Inventory.GetPlateFromId(id) )
+			result = invType == 'trunk' and db.loadTrunk( Inventory.GetPlateFromId(id) ) or db.loadGlovebox( Inventory.GetPlateFromId(id) )
 
 			if not result then
 				if server.randomloot then
@@ -358,7 +358,7 @@ function Inventory.Load(id, invType, owner)
 				end
 			else result = result[invType] end
 		else
-			result = MySQL:loadStash(owner or '', id)
+			result = db.loadStash(owner or '', id)
 		end
 	end
 
@@ -750,11 +750,12 @@ function Inventory.CanCarryItem(inv, item, count, metadata)
 	if item then
 		inv = Inventory(inv)
 		local itemSlots, totalCount, emptySlots = Inventory.GetItemSlots(inv, item, metadata == nil and {} or type(metadata) == 'string' and {type=metadata} or metadata)
+		local weight = metadata?.weight or item.weight
 
 		if next(itemSlots) or emptySlots > 0 then
-			if item.weight == 0 then return true end
+			if weight == 0 then return true end
 			if count == nil then count = 1 end
-			local newWeight = inv.weight + (item.weight * count)
+			local newWeight = inv.weight + (weight * count)
 
 			if newWeight > inv.maxWeight then
 				TriggerClientEvent('ox_lib:notify', inv.id, { type = 'error', description = shared.locale('cannot_carry') })
@@ -830,7 +831,7 @@ local function CustomDrop(prefix, items, coords, slots, maxWeight, instance)
 	local drop = generateDropId()
 	local inventory = Inventory.Create(drop, prefix..' '..drop, 'drop', slots or shared.playerslots, 0, maxWeight or shared.playerweight, false)
 	local items, weight = generateItems(inventory, 'drop', items)
-	
+
 	inventory.items = items
 	inventory.weight = weight
 	inventory.coords = coords
@@ -900,14 +901,13 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 				fromInventory = (data.fromType == 'player' and playerInventory) or Inventory(playerInventory.open)
 			end
 
-			local sameInventory = fromInventory.id == toInventory.id or false
+			local sameInventory = fromInventory.id == toInventory.id
+			local toData = toInventory.items[data.toSlot]
 
-			if fromInventory.type == 'policeevidence' and not sameInventory then
-				local group, rank = server.hasGroup(toInventory, shared.police)
+			if not sameInventory and (fromInventory.type == 'policeevidence' or (toInventory.type == 'policeevidence' and toData)) then
+				local group, rank = server.hasGroup(playerInventory, shared.police)
 
-				if not group then return end
-
-				if server.evidencegrade > rank then
+				if not group or server.evidencegrade > rank then
 					return TriggerClientEvent('ox_lib:notify', source, { type = 'error', description = shared.locale('evidence_cannot_take') })
 				end
 			end
@@ -917,7 +917,7 @@ lib.callback.register('ox_inventory:swapItems', function(source, data)
 
 				if fromData and (not fromData.metadata.container or fromData.metadata.container and toInventory.type ~= 'container') then
 					if data.count > fromData.count then data.count = fromData.count end
-					local toData = toInventory.items[data.toSlot]
+
 					local container = (not sameInventory and playerInventory.containerSlot) and (fromInventory.type == 'container' and fromInventory or toInventory)
 					local containerItem = container and playerInventory.items[playerInventory.containerSlot]
 
@@ -1130,7 +1130,7 @@ end)
 function Inventory.Confiscate(source)
 	local inv = Inventories[source]
 	if inv?.player then
-		MySQL:saveStash(inv.owner, inv.owner, json.encode(minimal(inv)))
+		db.saveStash(inv.owner, inv.owner, json.encode(minimal(inv)))
 		table.wipe(inv.items)
 		inv.weight = 0
 		TriggerClientEvent('ox_inventory:inventoryConfiscated', inv.id)
@@ -1217,10 +1217,10 @@ else
 		playerDropped(source)
 	end)
 
-	AddEventHandler('ox_groups:setGroup', function(source, group, rank)
+	AddEventHandler('ox:setGroup', function(source, name, grade)
 		local inventory = Inventories[source]
 		if inventory then
-			inventory.player.groups[group] = rank
+			inventory.player.groups[name] = grade
 		end
 	end)
 end
@@ -1256,7 +1256,7 @@ SetInterval(function()
 		end
 	end
 
-	MySQL:saveInventories(parameters[1], parameters[2], parameters[3])
+	db.saveInventories(parameters[1], parameters[2], parameters[3])
 end, 600000)
 
 local function saveInventories(lock)
@@ -1274,7 +1274,7 @@ local function saveInventories(lock)
 		end
 	end
 
-	MySQL:saveInventories(parameters[1], parameters[2], parameters[3])
+	db.saveInventories(parameters[1], parameters[2], parameters[3])
 end
 
 AddEventHandler('txAdmin:events:scheduledRestart', function(eventData)
