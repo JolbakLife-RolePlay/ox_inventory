@@ -270,6 +270,9 @@ return {
 			cancel = true,
 			notification = 'You drank some refreshing water',
 			export = 'JLRP-Config.water',
+		},
+		server = {
+			export = 'JLRP-Config.water',
 		}
 	},
 	
@@ -289,6 +292,9 @@ return {
 			usetime = 5000,
 			cancel = true,
 			notification = 'You drank some refreshing eCola',
+			export = 'JLRP-Config.cola',
+		},
+		server = {
 			export = 'JLRP-Config.cola',
 		}
 	},
