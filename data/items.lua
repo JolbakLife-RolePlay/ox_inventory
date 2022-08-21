@@ -60,28 +60,9 @@ return {
 		label = 'Dirty Money',
 	},
 
-	['burger'] = {
-		label = 'Burger',
-		weight = 220,
-		client = {
-			status = { hunger = 200000 },
-			anim = 'eating',
-			prop = 'burger',
-			usetime = 2500,
-			notification = 'You ate a delicious burger'
-		},
-	},
-
-	['cola'] = {
-		label = 'eCola',
-		weight = 350,
-		client = {
-			status = { thirst = 200000 },
-			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
-			prop = { model = `prop_ecola_can`, pos = vec3(0.01, 0.01, 0.06), rot = vec3(5.0, 5.0, -180.5) },
-			usetime = 2500,
-			notification = 'You quenched your thirst with cola'
-		}
+	['clothing'] = {
+		label = 'Clothing',
+		consume = 0,
 	},
 
 	['parachute'] = {
@@ -170,18 +151,7 @@ return {
 		}
 	},
 
-	['water'] = {
-		label = 'Water',
-		weight = 500,
-		client = {
-			status = { thirst = 200000 },
-			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
-			prop = { model = `prop_ld_flow_bottle`, pos = vec3(0.03, 0.03, 0.02), rot = vec3(0.0, 0.0, -1.5) },
-			usetime = 2500,
-			cancel = true,
-			notification = 'You drank some refreshing water'
-		}
-	},
+	
 
 	['radio'] = {
 		label = 'Radio',
@@ -246,10 +216,317 @@ return {
 		client = {
 			export = 'JLRP-Config.firework4',
 		}
-  },
-
-	['clothing'] = {
-		label = 'Clothing',
-		consume = 0,
+	},
+	
+	-- Foods
+	['burger'] = {
+		label = 'Burger Classic',
+		weight = 225,
+		client = {
+			anim = 'eating',
+			prop = 'burger',
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You ate a delicious classic burger',
+			export = 'JLRP-Config.burger',
+		},
+	},
+	['burger_double'] = {
+		label = 'Burger Double',
+		weight = 300,
+		client = {
+			anim = 'eating',
+			prop = 'burger',
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You ate a delicious double burger',
+			export = 'JLRP-Config.burger_double',
+		},
+	},
+	['burger_triple'] = {
+		label = 'Burger Triple',
+		weight = 350,
+		client = {
+			anim = 'eating',
+			prop = 'burger',
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You ate a delicious triple burger',
+			export = 'JLRP-Config.burger_triple',
+		},
+	},
+	
+	['water'] = {
+		label = 'Water',
+		weight = 450,
+		client = {
+			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
+			prop = { model = `prop_ld_flow_bottle`, pos = vec3(0.03, 0.03, 0.02), rot = vec3(0.0, 0.0, -1.5) },
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You drank some refreshing water',
+			export = 'JLRP-Config.water',
+		}
+	},
+	
+	['trash_water'] = {
+		label = 'Trash Water',
+		weight = 35,
+		description = 'Garbage'
+	},
+	
+	['cola'] = {
+		label = 'eCola',
+		weight = 350,
+		client = {
+			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
+			prop = { model = `prop_ecola_can`, pos = vec3(0.01, 0.01, 0.06), rot = vec3(5.0, 5.0, -180.5) },
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You drank some refreshing eCola',
+			export = 'JLRP-Config.cola',
+		}
+	},
+	
+	['trash_can'] = {
+		label = 'Trash Can',
+		weight = 35,
+		description = 'Garbage'
+	},
+	
+	['coffee_small'] = {
+		label = 'Small Coffee',
+		weight = 350,
+		client = {
+			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
+			prop = { model = `prop_fib_coffee`, pos = vec3(0.01, 0.01, 0.06), rot = vec3(5.0, 5.0, -180.5) },
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You drank some small coffee',
+			export = 'JLRP-Config.coffee_small',
+		},
+		server = {
+			export = 'JLRP-Config.coffee_small',
+		}
+	},
+	
+	['coffee_medium'] = {
+		label = 'Medium Coffee',
+		weight = 400,
+		client = {
+			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
+			prop = { model = `prop_fib_coffee`, pos = vec3(0.01, 0.01, 0.06), rot = vec3(5.0, 5.0, -180.5) },
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You drank some medium coffee',
+			export = 'JLRP-Config.coffee_medium',
+		},
+		server = {
+			export = 'JLRP-Config.coffee_medium',
+		}
+	},
+	
+	['coffee_large'] = {
+		label = 'Large Coffee',
+		weight = 450,
+		client = {
+			anim = { dict = 'mp_player_intdrink', clip = 'loop_bottle' },
+			prop = { model = `prop_fib_coffee`, pos = vec3(0.01, 0.01, 0.06), rot = vec3(5.0, 5.0, -180.5) },
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You drank some large coffee',
+			export = 'JLRP-Config.coffee_large',
+		},
+		server = {
+			export = 'JLRP-Config.coffee_large',
+		}
+	},
+	
+	['trash_coffee'] = {
+		label = 'Trash Coffee',
+		weight = 35,
+		description = 'Garbage'
+	},
+	
+	['orange'] = {
+		label = 'Orange',
+		weight = 200,
+		consume = 1,
+		stack = true,
+		close = false,
+		client = {
+			anim = 'eating',
+			prop = { 
+				model = 'ng_proc_food_ornge1a',
+				pos = { x = 0.05, y = 0.00, z = -0.06},
+				rot = { x = 0.0, y = 0.0, z = 0.0}
+			},
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You ate a delicious orange with peel',
+			export = 'JLRP-Config.orange',
+		},
+		server = {
+			export = 'JLRP-Config.orange',
+		},
+		buttons = {
+			{
+				label = 'پوستشو بکن',
+				action = function(slot)
+					TriggerServerEvent('JLRP-Config:Server:Consumables:PeelSkin:Orange', slot)
+				end
+			},
+		}
+	},
+	['orange_peeled'] = {
+		label = 'Peeled Orange',
+		weight = 175,
+		degrade = 15,
+		consume = 1,
+		close = false,
+		description = 'پرتقال دان جان',
+		client = {
+			anim = 'eating',
+			prop = { 
+				model = 'ng_proc_food_ornge1a',
+				pos = { x = 0.05, y = 0.00, z = -0.06},
+				rot = { x = 0.0, y = 0.0, z = 0.0}
+			},
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You ate a delicious peeled orange',
+			export = 'JLRP-Config.orange',
+		},
+	},
+	['orange_peel'] = {
+		label = 'Orange Peel',
+		weight = 25,
+		description = 'Garbage'
+	},
+	
+	['apple'] = {
+		label = 'Apple',
+		weight = 150,
+		consume = 1,
+		stack = true,
+		close = false,
+		client = {
+			anim = 'eating',
+			prop = { 
+				model = 'ng_proc_food_aple2a',
+				pos = { x = 0.05, y = 0.05, z = -0.03},
+				rot = { x = 90.0, y = 90.0, z = 0.0}
+			},
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You ate a delicious apple with peel',
+			export = 'JLRP-Config.apple',
+		},
+		server = {
+			export = 'JLRP-Config.apple',
+		},
+		buttons = {
+			{
+				label = 'پوستشو بکن',
+				action = function(slot)
+					TriggerServerEvent('JLRP-Config:Server:Consumables:PeelSkin:Apple', slot)
+				end
+			},
+		}
+	},
+	['apple_peeled'] = {
+		label = 'Peeled Apple',
+		weight = 135,
+		degrade = 15,
+		consume = 1,
+		close = false,
+		description = 'سیب دان جان',
+		client = {
+			anim = 'eating',
+			prop = { 
+				model = 'ng_proc_food_aple2a',
+				pos = { x = 0.05, y = 0.05, z = -0.03},
+				rot = { x = 90.0, y = 90.0, z = 0.0}
+			},
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You ate a delicious peeled apple',
+			export = 'JLRP-Config.apple',
+		},
+	},
+	['apple_peel'] = {
+		label = 'Apple Peel',
+		weight = 15,
+		description = 'Garbage'
+	},
+	
+	['banana'] = {
+		label = 'Banana',
+		weight = 150,
+		consume = 1,
+		stack = true,
+		close = false,
+		client = {
+			anim = 'eating',
+			prop = { 
+				model = 'ng_proc_food_nana1a',
+				pos = { x = 0.00, y = 0.03, z = -0.05},
+				rot = { x = 90.0, y = 45.0, z = 0.0}
+			},
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You ate a delicious banana with peel',
+			export = 'JLRP-Config.banana',
+		},
+		server = {
+			export = 'JLRP-Config.banana',
+		},
+		buttons = {
+			{
+				label = 'پوستشو بکن',
+				action = function(slot)
+					TriggerServerEvent('JLRP-Config:Server:Consumables:PeelSkin:Banana', slot)
+				end
+			},
+		}
+	},
+	['banana_peeled'] = {
+		label = 'Peeled Banana',
+		weight = 115,
+		degrade = 15,
+		consume = 1,
+		close = false,
+		description = 'موز دراز',
+		client = {
+			anim = 'eating',
+			prop = { 
+				model = 'ng_proc_food_nana1a',
+				pos = { x = 0.00, y = 0.03, z = -0.05},
+				rot = { x = 90.0, y = 45.0, z = 0.0}
+			},
+			disable = { combat = true },
+			usetime = 5000,
+			cancel = true,
+			notification = 'You ate a delicious peeled banana',
+			export = 'JLRP-Config.banana',
+		},
+	},
+	['banana_peel'] = {
+		label = 'Banana Peel',
+		weight = 35,
+		description = 'Garbage'
 	},
 }

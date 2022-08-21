@@ -132,12 +132,27 @@ return {
 		blip = {
 			id = 403, colour = 69, scale = 0.8
 		}, inventory = {
-			{ name = 'medikit', price = 26 },
-			{ name = 'bandage', price = 5 }
+			{ name = 'medikit', price = 0 },
+			{ name = 'bandage', price = 0 }
 		}, locations = {
 			vec3(306.3687, -601.5139, 43.28406)
 		}, targets = {
-
+			
+		}
+	},
+	
+	AmbulanceFruit = {
+		name = 'Fruit Bowl',
+		groups = {
+			['ambulance'] = 0
+		}, inventory = {
+			{ name = 'orange', price = 0 },
+			{ name = 'banana', price = 0 },
+			{ name = 'apple', price = 0 },
+		}, locations = {
+			
+		}, targets = {
+			{ loc = vec3(303.66, -598.57, 43.28), length = 0.5, width = 0.5, heading = 325.0, minZ = 43.2 - 0.5, maxZ = 43.2 + 0.5, distance = 1.0 }
 		}
 	},
 
@@ -161,9 +176,22 @@ return {
 		inventory = {
 			{ name = 'water', price = 10 },
 			{ name = 'cola', price = 10 },
+			{ name = 'coffee_small', price = 8 },
 		},
 		model = {
 			`prop_vend_soda_02`, `prop_vend_fridge01`, `prop_vend_water_01`, `prop_vend_soda_01`
 		}
-	}
+	},
+	
+	VendingMachineCoffee = {
+		name = 'Coffe Bean',
+		inventory = {
+			{ name = 'coffee_small', price = 8 },
+			{ name = 'coffee_medium', price = 12 },
+			{ name = 'coffee_large', price = 16 },
+		},
+		model = {
+			`prop_vend_coffe_01`
+		}
+	},
 }
